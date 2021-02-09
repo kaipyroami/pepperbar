@@ -22,28 +22,28 @@ import (
 	twitterscraper "github.com/n0madic/twitter-scraper"
 	"github.com/spf13/cobra"
 	"log"
+	"os"
+	"strconv"
 	"time"
+	"io/ioutil"
 )
 
 // twitterCmd represents the twitter command
 var twitterCmd = &cobra.Command{
 	Use:   "twitter",
 	Short: "Pull Twitter data and publish to an RSS",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Long: `This module will pull a specified number of tweets 
+	from a user and publish it to an RSS, Atom or JSON file.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("twitter called")
+		fmt.Println("Getting twitter posts from " + username)
 
-		runScraper(Username, Count)
+		runScraper(username, count)
 	},
 }
 
-var Username string
-var Count int
+// Variable for twitter functionality
+var username, outfile, feedtype string
+var count int
 
 func init() {
 	rootCmd.AddCommand(twitterCmd)
@@ -58,8 +58,10 @@ func init() {
 	// is called directly, e.g.:
 	// twitterCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
-	twitterCmd.PersistentFlags().StringVarP(&Username,"username", "u", "twitter", "Twitter username")
-	twitterCmd.PersistentFlags().IntVarP(&Count, "count", "c", 25, "Help message for toggle")
+	twitterCmd.PersistentFlags().StringVarP(&username,"username", "u", "twitter", "Twitter username")
+	twitterCmd.PersistentFlags().IntVarP(&count, "count", "c", 25, "Help message for toggle")
+	twitterCmd.PersistentFlags().StringVarP(&outfile,"outfile", "f", "feed.xml", "Name of output file.")
+	twitterCmd.PersistentFlags().StringVarP(&feedtype,"format", "t", "rss", "Format for the feed generated. Atom, RSS or JSON")
 	twitterCmd.MarkFlagRequired("username")
 }
 
@@ -70,10 +72,10 @@ func runScraper(twituser string, numtweets int){
 
 	now := time.Now()
 	feed := &feeds.Feed{
-		Title:       "jmoiron.net blog",
-		Link:        &feeds.Link{Href: "http://jmoiron.net/blog"},
-		Description: "discussion about tech, footie, photos",
-		Author:      &feeds.Author{Name: "Jason Moiron", Email: "jmoiron@jmoiron.net"},
+		Title:       "Feed generated with pepperbar",
+		Link:        &feeds.Link{Href: "https://github.com/kaipyroami/pepperbar"},
+		Description: "A command line web scraper to RSS utility.",
+		Author:      &feeds.Author{Name: "Kyle Crockett", Email: "kyle@kyle-crockett.com"},
 		Created:     now,
 	}
 
@@ -94,26 +96,33 @@ func runScraper(twituser string, numtweets int){
 		feed.Items = append(feed.Items, &newItem)
 	}
 
+	var feedOut string
+	var err error
 
-
-	/*
-		atom, err := feed.ToAtom()
+	switch feedtype {
+	case "rss":
+		feedOut, err = feed.ToRss()
 		if err != nil {
 			log.Fatal(err)
 		}
-
-		rss, err := feed.ToRss()
+	case "atom":
+		feedOut, err = feed.ToAtom()
 		if err != nil {
 			log.Fatal(err)
 		}
-	*/
-	json, err := feed.ToJSON()
-	if err != nil {
-		log.Fatal(err)
+	case "json":
+		feedOut, err = feed.ToJSON()
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
-	//fmt.Println(atom, "\n", rss, "\n", json)
+	modeVal, _ := strconv.ParseUint("0775", 8, 32)
+	fm := os.FileMode(modeVal)
+	err = ioutil.WriteFile(outfile, []byte(feedOut), fm)
+	if err != nil {
+		panic(err)
+	}
 
-	fmt.Println(json)
 
 }
