@@ -41,7 +41,7 @@ var twitterCmd = &cobra.Command{
 	},
 }
 
-// Variable for twitter functionality
+// Variables for twitter flag functionality
 var username, outfile, feedtype string
 var count int
 
@@ -58,6 +58,7 @@ func init() {
 	// is called directly, e.g.:
 	// twitterCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
+	// TODO: Add optional feed title, link, description and author flags.
 	twitterCmd.PersistentFlags().StringVarP(&username,"username", "u", "twitter", "Twitter username")
 	twitterCmd.PersistentFlags().IntVarP(&count, "count", "c", 25, "Help message for toggle")
 	twitterCmd.PersistentFlags().StringVarP(&outfile,"outfile", "f", "feed.xml", "Name of output file.")
@@ -116,7 +117,7 @@ func runScraper(twituser string, numtweets int){
 			log.Fatal(err)
 		}
 	}
-
+	// TODO: Need to fix this filepath issue.
 	modeVal, _ := strconv.ParseUint("0775", 8, 32)
 	fm := os.FileMode(modeVal)
 	err = ioutil.WriteFile(outfile, []byte(feedOut), fm)
