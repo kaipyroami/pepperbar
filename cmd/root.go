@@ -30,12 +30,12 @@ var cfgFile string
 var rootCmd = &cobra.Command{
 	Use:   "pepperbar",
 	Short: "A command line web scraper to RSS utility",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Long: `A command line web scraper to RSS utility. 
+The mission of this project is to facilitate the cron-able generation 
+of RSS feeds from whatever web content you want. The feeds can then 
+be used in an RSS aggregator such as Miniflux. This makes it possible 
+to keep up to date on many info sources from different formats in one 
+place.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	//	Run: func(cmd *cobra.Command, args []string) { },
