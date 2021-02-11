@@ -7,11 +7,11 @@ The mission of this project is to facilitate the cron-able generation of RSS fee
 The feeds can then be used in an RSS aggregator such as [Miniflux](https://miniflux.app/).
 This makes it possible to keep up to date on many info sources from different formats in one place.
 
-##Examples
+## Examples
 
 ---
 
-###Example of twitter scraper usage
+### Example of twitter scraper usage
 
 ```bash
 pepperbar twitter --count=5 --username=Twitter --format=atom --outfile=feed.xml
